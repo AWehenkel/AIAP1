@@ -23,9 +23,12 @@ from sklearn.neighbors import KNeighborsClassifier
 # (Question 2)
 from plot import plot_boundary
 from sklearn.model_selection import cross_val_score
+from matplotlib import patches
 # Put your functions here
 
-def question21(n_neighbours, train_size=150, train_pos=0, title=''):
+# ----- Question 2.1 ------ #
+
+def question21(n_neighbours, X1, y1, X2, y2, title=''):
     '''This function builds a k-nearest neighbours model on two training sets
     and displays the decision boundary with the corresponding testing sets.
 
@@ -34,30 +37,36 @@ def question21(n_neighbours, train_size=150, train_pos=0, title=''):
     n_neighbours  : int > 0
         number of neighbours used in the k-nearest neighbours model
 
+    X1, X2:
+        input values of the two datasets
+
+    y1, y2:
+        output values of the two datasets
+
     title    : string, (default = '')
         title given to the plots
 
     '''
 
     #Makes the computation for the first dataset
-    X,y = make_data1(2000)
-    training_set = [X[0:149],y[0:149]]
-    test_set = [X[150::],y[150::]]
+    training_set1 = [X1[0:149],y1[0:149]]
+    test_set1 = [X1[150::],y1[150::]]
     neigh = KNeighborsClassifier(n_neighbors=n_neighbours)
-    neigh.fit(training_set[0],training_set[1])
-    plot_boundary(title+"_set1", neigh, test_set[0], test_set[1])
+    neigh.fit(training_set1[0],training_set1[1])
+    plot_boundary(title+"_set1", neigh, test_set1[0], test_set1[1])
 
     #Makes the computation for the second dataset
-    X,y = make_data2(2000)
-    training_set = [X[0:149],y[0:149]]
-    test_set = [X[150::],y[150::]]
+    training_set2 = [X2[0:149],y2[0:149]]
+    test_set2 = [X2[150::],y2[150::]]
     neigh = KNeighborsClassifier(n_neighbors=n_neighbours)
-    neigh.fit(training_set[0],training_set[1])
-    plot_boundary(title+"_set2", neigh, test_set[0], test_set[1])
+    neigh.fit(training_set2[0],training_set2[1])
+    plot_boundary(title+"_set2", neigh, test_set2[0], test_set2[1])
 
 
 
-def question22(n_min, n_max):
+# ----- Question 2.2 ------ #
+
+def question22(n_min, n_max, n_step, X1, y1, X2, y2):
     '''This function builds a k-nearest neighbours model on two training sets
     for several values of n_neighbours and displays the decision boundary with
     the corresponding testing sets.
@@ -70,15 +79,112 @@ def question22(n_min, n_max):
     n_max : int >= n_min
         the maximal number of neighbours for which the model must be computed
 
+    n_step: int > 0
+        step between two successive n_neighbours that you test
+
+    X1, X2:
+        input values of the two datasets
+
+    y1, y2:
+        output values of the two datasets
+
     '''
 
     while n_min <= n_max :
-        question21(n_min, "test_"+ str(n_min) +"neigh")
-        n_min += 1
+        question21(n_min, X1, y1, X2, y2, "test_"+ str(n_min) +"neigh")
+        n_min += n_step
 
 
-#!!! Pour cette question, il faudrait peut etre faire plusieurs iterations pour avoir une meilleure estimation
-def question23(n_min, n_max):
+
+# ----- Question 2.3 ------ #
+
+def plotQuestion23(n_min, n_max, accu_train, accu_test, title):
+    '''This function plots the accuracy on the learning and training sets for various values of
+        the n_neighbours parameter.
+
+        Parameters
+        ----------
+        n_min : int > 0
+        the minimal number of neighbours for which the model must be computed
+
+        n_max : int >= n_min
+            the maximal number of neighbours for which the model must be computed
+
+        accu_train: vector of float
+            accuracy on the learning sets for different values of n_neighbours
+
+        accu_test: vector of float
+            accuracy on the testing sets for different values of n_neighbours
+
+        title: string
+            title of the graph
+        '''
+
+    #Changing accuracy to error ratio
+    error_train = [1-i for i in accu_train]
+    error_test = [1-i for i in accu_test]
+
+    plt.plot(range(n_min, n_max+1), error_train, 'r', range(n_min, n_max+1), error_test, 'b')
+    plt.xlabel("N_neighbours")
+    plt.ylabel("Error ratio")
+    r_patch = patches.Patch(color='r', label='Training error')
+    b_patch = patches.Patch(color='b', label='Testing error')
+    plt.legend(handles=[r_patch, b_patch])
+    plt.title(title)
+    plt.show()
+
+def computeAccu(n_min, n_max, n_iter, make_data):
+    '''This function computes the accuracy of the k-neighbours model on the
+    learning and testing sets for different number of neighbours
+
+    Parameters
+    ----------
+    n_min : int > 0
+        the minimal number of neighbours for which the model must be computed
+
+    n_max : int >= n_min
+        the maximal number of neighbours for which the model must be computed
+
+    n_iter: int > 0
+        number of iterations
+
+    make_data:
+        function creating a dataset
+
+    Returns
+    -------
+    accu_train: vector of float
+        accuracy on the learning sets for different values of n_neighbours
+
+    accu_test: vector of float
+        accuracy on the testing sets for different values of n_neighbours
+
+    '''
+
+    if n_max >= n_min:
+        accu_train = [0 for x in range(n_max-n_min+1)]
+        accu_test = [0 for x in range(n_max-n_min+1)]
+
+        for i in range(n_iter):
+            #Create the dataset
+            X,y = make_data(2000)
+            training_set = [X[0:149],y[0:149]]
+            test_set = [X[150::],y[150::]]
+
+            for i in range(n_max-n_min+1):
+                #Compute accuracy for the dataset
+                neigh = KNeighborsClassifier(n_neighbors=i+n_min)
+                neigh.fit(training_set[0],training_set[1])
+                accu_train[i] += neigh.score(training_set[0], training_set[1])
+                accu_test[i] += neigh.score(test_set[0], test_set[1])
+
+        #Compute the mean of the results
+        accu_train = [i/n_iter for i in accu_train]
+        accu_test = [i/n_iter for i in accu_test]
+
+        return [accu_train, accu_test]
+
+def question23(n_min, n_max, n_iter):
     '''This function computes the accuracy of the k-neighbours model on the
     learning and testing sets for different number of neighbours and plot the corresponding
     error curves. It does this for the two data sets.
@@ -91,42 +197,61 @@ def question23(n_min, n_max):
     n_max : int >= n_min
         the maximal number of neighbours for which the model must be computed
 
+    n_iter: int > 0
+        number of iterations
+
     '''
 
-    if n_max >= n_min:
-        accu1_train = [0 for x in range(n_max-n_min+1)]
-        accu1_test = [0 for x in range(n_max-n_min+1)]
-        accu2_train = [0 for x in range(n_max-n_min+1)]
-        accu2_test = [0 for x in range(n_max-n_min+1)]
+    #DataSet1
+    [accu_train1, accu_test1] = computeAccu(n_min, n_max, n_iter, make_data1)
+    plotQuestion23(n_min, n_max, accu_train1, accu_test1, "Dataset1")
 
-        #Create dataset 1
-        X,y = make_data1(2000)
-        training_set1 = [X[0:149],y[0:149]]
-        test_set1 = [X[150::],y[150::]]
+    #DataSet2
+    [accu_train2, accu_test2] = computeAccu(n_min, n_max, n_iter, make_data2)
+    plotQuestion23(n_min, n_max, accu_train2, accu_test2, "Dataset2")
 
-        #Create dataset 2
-        X,y = make_data2(2000)
-        training_set2 = [X[0:149],y[0:149]]
-        test_set2 = [X[150::],y[150::]]
 
-        for i in range(n_max-n_min+1):
-            #Compute accuracy for dataset 1
-            neigh1 = KNeighborsClassifier(n_neighbors=i+n_min)
-            neigh1.fit(training_set1[0],training_set1[1])
-            accu1_train[i] = neigh1.score(training_set1[0], training_set1[1])#!!!! PAS SUR DU TOUT QU'IL FAUT UTILISER CETTE FONCTION LA
-            accu1_test[i] = neigh1.score(test_set1[0], test_set1[1])
-            #Compute accuracy for dataset 2
-            neigh2 = KNeighborsClassifier(n_neighbors=i+n_min)
-            neigh2.fit(training_set2[0],training_set2[1])
-            accu2_train[i] = neigh1.score(training_set2[0], training_set2[1])
-            accu2_test[i] = neigh1.score(test_set2[0], test_set2[1])
 
-        #Plot
-        plt.plot(accu1_train)
-        plt.plot(accu1_test)
-        plt.plot(accu2_train)
-        plt.plot(accu2_test)
-        plt.show()
+# ----- Question 2.4 ------ #
+
+def optimize(n_max, make_data, nb_fold):
+    '''This function uses a k-fold cross validation strategy to optimize the value of
+        the n_neighbors parameter.
+
+        Parameters
+        ---------
+        n_max: int > 0
+            the range of n_neighbours parameters that are going to be tested
+
+        make_data:
+            function to create a data set
+
+        nb_fold: int > 0
+            number of folds used in the cross validation strategy
+
+        Return
+        ------
+        best_score: float > 0, <= 1
+            best score obtained with the ten-fold cross validation strategy
+
+        best_neigh: > 0, <= n_max
+            value of n_neighbours for which the ten-fold cross validation strategy was optimal
+    '''
+
+    best_score = 0
+    best_neigh = 1
+    X,y = make_data(2000)
+
+    for i in range(1, n_max+1):
+        neigh = KNeighborsClassifier(n_neighbors=i)
+        score = sum(cross_val_score(neigh, X, y, cv=nb_fold))/nb_fold
+
+        #Update the return values
+        if score > best_score:
+            best_score = score
+            best_neigh = i
+
+    return [best_score, best_neigh]
 
 def question24(n_max):
     '''This function uses a ten-fold cross validation strategy to optimize the value of
@@ -139,43 +264,34 @@ def question24(n_max):
 
         Return
         ------
-        best_score: float > 0, <= 1
-            best score obtained with the ten-fold cross validation strategy
+        best_score1, best_score2: float > 0, <= 1
+            best scores for each data sets obtained with the ten-fold cross validation strategy
 
-        best_neigh: > 0, <= n_max
-            value of n_neighbours for which the ten-fold cross validation strategy was optimal
+        best_neigh1, best_neigh2: int > 0, <= n_max
+            value of n_neighbours for each data sets for which the ten-fold cross validation strategy was optimal
 
         '''
 
     nb_fold = 10
-
-    #Dataset 1
-    best_score1 = 0
-    best_neigh1 = 1
-    X1,y1 = make_data1(2000)
-
-    #Dataset 2
-    best_score2 = 0
-    best_neigh2 = 1
-    X2, y2 = make_data2(2000)
-
-
-    for i in range(1, n_max+1):
-        neigh = KNeighborsClassifier(n_neighbors=i)
-        score1 = sum(cross_val_score(neigh, X1, y1, cv=nb_fold))/nb_fold
-        score2 = sum(cross_val_score(neigh, X2, y2, cv=nb_fold))/nb_fold
-        #Update the return values
-        if score1 > best_score1:
-            best_score1 = score1
-            best_neigh1 = i
-
-        if score2 > best_score2:
-            best_score2 = score2
-            best_neigh2 = i
-
+    [best_score1, best_neigh1] = optimize(n_max, make_data1, nb_fold)
+    [best_score2, best_neigh2] = optimize(n_max, make_data2, nb_fold)
     return [best_score1, best_neigh1, best_score2, best_neigh2]
 
-
-
 if __name__ == "__main__":
-    print(question24(10))
+
+    #Tests
+    #X1,y1 = make_data1(2000)
+    #X2,y2 = make_data2(2000)
+
+    #Question 2.1
+    #question21(5, X1, y1, X2, y2, "test21")
+
+    #Question 2.2
+    #question22(1, 9, 1, X1, y1, X2, y2)
+    #question22(10, 100, 10, X1, y1, X2, y2)
+
+    #Question 2.3
+    #question23(1, 100, 100)
+
+    #Question 2.4
+    #print(question24(100))
