@@ -17,6 +17,7 @@ import numpy as np
 
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
+from scipy.stats import norm
 
 
 
@@ -31,6 +32,8 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         variance of each feature per class
     classes_ : array, shape(n_classes)
         the value of the different classes
+    prior_ : array, shape(n_classes)
+        the likelihood of different classes
     '''
 
     def fit(self, X, y):
@@ -67,9 +70,10 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         self.classes_ = np.unique(y)
         n_classes = self.classes_.shape[0]
         n_features = X.shape[1]
+        n_samples = X.shape[0]
         self.theta_ = np.zeros((n_classes, n_features))
         self.sigma_ = np.zeros((n_classes, n_features))
-
+        self.prior_ = np.zeros((n_classes, 1))
         i = 0
         for y_i in self.classes_:
             #Get all the input values for which the input is y_i
@@ -77,6 +81,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
             #Compute the means and the variance for that output
             self.theta_[i] = np.mean(X_i, axis=0)
             self.sigma_[i] = np.var(X_i, axis=0)
+            self.prior_[i] = float(X_i.shape[0])/float(n_samples)
             i += 1
 
         return self
@@ -123,8 +128,56 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         # TODO your code here.
         # ====================
+        n_classes = self.classes_.shape[0]
+        n_samples = X.shape[0]
+        p = np.zeros((n_samples, n_classes))
+        for i in range(0, n_samples):
+                p[i] = self.__predict_once_proba(X[i])
 
-        pass
+        return p
+
+    def __gauss_cond_proba(self, x, y, xval):
+        """Return conditional probability of the value xval of the feature x knowing the value y of the class.
+
+                Parameters
+                ----------
+                x : int
+                    The id of the feature.
+                y : int
+                    The id of the class.
+                x : int
+                    The value of the feature.
+
+                Returns
+                -------
+                p : float
+                    The conditional probability
+                """
+        theta = self.theta_[y,x]
+        sigma = self.sigma_[y,x]
+        return norm(sigma, theta).pdf(xval)
+
+    def __predict_once_proba(self, X):
+        """Return probability estimates for the test data X.
+
+                Parameters
+                ----------
+                X : array-like of shape = [n_features]
+                    The input sample.
+
+                Returns
+                -------
+                p : array of shape = [n_classes]
+                    The class probabilities of the input sample. Classes are ordered
+                    by lexicographic order.
+                """
+        n_classes = self.classes_.shape[0]
+        p = np.zeros((n_classes))
+        for cl in range(0, len(self.classes_)):
+            p[cl] = self.prior_[cl]
+            for fe in range(0, len(X)):
+                p[cl] *= self.__gauss_cond_proba(fe, cl, X[fe])
+        return p
 
 if __name__ == "__main__":
     from data import make_data2

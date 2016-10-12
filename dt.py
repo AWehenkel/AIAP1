@@ -105,8 +105,8 @@ if __name__ == "__main__":
     #plotForQuestion3(sets2, 150, 15, "dataset 2")
 
     #Tests Q4
-    crossOptimize(set1, 10, 25)
-    crossOptimize(set2, 10, 25)
+    #crossOptimize(set1, 10, 25)
+    crossOptimize(set2, 10, 45)
 
 
 
