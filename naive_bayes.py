@@ -29,6 +29,8 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         mean of each feature per class
     sigma_ : array, shape (n_classes, n_features)
         variance of each feature per class
+    classes_ : array, shape(n_classes)
+        the value of the different classes
     '''
 
     def fit(self, X, y):
@@ -62,14 +64,14 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
 
         #For each type of output, compute the mean and the variance of the corresponding inputs
-        unique_y = np.unique(y)
-        n_classes = unique_y.shape[0]
+        self.classes_ = np.unique(y)
+        n_classes = self.classes_.shape[0]
         n_features = X.shape[1]
         self.theta_ = np.zeros((n_classes, n_features))
         self.sigma_ = np.zeros((n_classes, n_features))
 
         i = 0
-        for y_i in unique_y:
+        for y_i in self.classes_:
             #Get all the input values for which the input is y_i
             X_i = X[y == y_i, :]
             #Compute the means and the variance for that output
@@ -96,8 +98,9 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         # TODO your code here.
         # ====================
-        return self.theta_
-        pass
+        #Return for each sample the number of the class for which the prob. was maximum
+        prob = self.predict_proba(X)
+        return self.classes_[np.argmax(prob, axis=1)]
 
     def predict_proba(self, X):
         """Return probability estimates for the test data X.
@@ -124,7 +127,11 @@ if __name__ == "__main__":
     from data import make_data2
     from plot import plot_boundary
 
+    '''
     X,y = make_data2(2000)
     estimator = GaussianNaiveBayes().fit(X,y)
     print(estimator.theta_)
     print(estimator.sigma_)
+    '''
+    classes = [0,1]
+    print()
