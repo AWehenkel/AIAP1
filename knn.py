@@ -294,4 +294,4 @@ if __name__ == "__main__":
     #question23(1, 100, 100)
 
     #Question 2.4
-    #print(question24(100))
+    print(question24(100))

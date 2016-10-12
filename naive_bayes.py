@@ -22,9 +22,17 @@ from sklearn.base import ClassifierMixin
 
 class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
 
+    '''
+    Attributes
+    ----------
+    theta_ : array, shape (n_classes, n_features)
+        mean of each feature per class
+    sigma_ : array, shape (n_classes, n_features)
+        variance of each feature per class
+    '''
 
     def fit(self, X, y):
-        """Fit a Gaussian navie Bayes model using the training set (X, y).
+        """Fit a Gaussian naive Bayes model using the training set (X, y).
 
         Parameters
         ----------
@@ -39,6 +47,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         self : object
             Returns self.
         """
+
         # Input validation
         X = np.asarray(X, dtype=np.float)
         if X.ndim != 2:
@@ -51,6 +60,22 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         # TODO your code here.
         # ====================
+
+        #For each type of output, compute the mean and the variance of the corresponding inputs
+        unique_y = np.unique(y)
+        n_classes = unique_y.shape[0]
+        n_features = X.shape[1]
+        self.theta_ = np.zeros((n_classes, n_features))
+        self.sigma_ = np.zeros((n_classes, n_features))
+
+        i = 0
+        for y_i in unique_y:
+            #Get all the input values for which the input is y_i
+            X_i = X[y == y_i, :]
+            #Compute the means and the variance for that output
+            self.theta_[i] = np.mean(X_i, axis=0)
+            self.sigma_[i] = np.var(X_i, axis=0)
+            i += 1
 
         return self
 
@@ -71,7 +96,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         # TODO your code here.
         # ====================
-
+        return self.theta_
         pass
 
     def predict_proba(self, X):
@@ -96,5 +121,10 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         pass
 
 if __name__ == "__main__":
-    from data import make_data
+    from data import make_data2
     from plot import plot_boundary
+
+    X,y = make_data2(2000)
+    estimator = GaussianNaiveBayes().fit(X,y)
+    print(estimator.theta_)
+    print(estimator.sigma_)
