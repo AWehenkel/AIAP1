@@ -100,7 +100,10 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         #Return for each sample the number of the class for which the prob. was maximum
         prob = self.predict_proba(X)
-        return self.classes_[np.argmax(prob, axis=1)]
+        y = np.matrix(X.shape[0])
+        for i in len(y):
+            y[i] = np.argmax(X[i,:])
+        return y
 
     def predict_proba(self, X):
         """Return probability estimates for the test data X.
@@ -134,4 +137,5 @@ if __name__ == "__main__":
     print(estimator.sigma_)
     '''
     classes = [0,1]
-    print()
+    mat = np.matrix([[0.4, 0.7, 0.6],[0.6, 0.3, 0.5]])
+    print(np.argmax([0, 4, 8]))
