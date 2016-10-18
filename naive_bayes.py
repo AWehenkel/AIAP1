@@ -73,7 +73,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         n_samples = X.shape[0]
         self.theta_ = np.zeros((n_classes, n_features))
         self.sigma_ = np.zeros((n_classes, n_features))
-        self.prior_ = np.zeros((n_classes, 1))
+        self.prior_ = np.zeros(n_classes)
         i = 0
         for y_i in self.classes_:
             #Get all the input values for which the input is y_i
@@ -105,10 +105,10 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         # ====================
         #Return for each sample the number of the class for which the prob. was maximum
         prob = self.predict_proba(X)
-        y = np.matrix(X.shape[0])
-        for i in len(y):
-            y[i] = np.argmax(X[i,:])
-        return y
+        y = []
+        for i in range(X.shape[0]):
+            y.append(np.argmax(prob[i,:]))
+        return np.array(y).T
 
     def predict_proba(self, X):
         """Return probability estimates for the test data X.
@@ -145,7 +145,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
                     The id of the feature.
                 y : int
                     The id of the class.
-                x : int
+                xval : int
                     The value of the feature.
 
                 Returns
@@ -155,7 +155,7 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
                 """
         theta = self.theta_[y,x]
         sigma = self.sigma_[y,x]
-        return norm(sigma, theta).pdf(xval)
+        return norm(theta, sigma).pdf(xval)
 
     def __predict_once_proba(self, X):
         """Return probability estimates for the test data X.
@@ -180,15 +180,22 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
         return p
 
 if __name__ == "__main__":
-    from data import make_data2
+    from data import make_data1
     from plot import plot_boundary
+    from sklearn.naive_bayes import GaussianNB
 
+    X1,y1 = make_data1(2000)
+    training_set1 = [X1[0:149],y1[0:149]]
+    test_set1 = [X1[150::],y1[150::]]
+    neigh = GaussianNaiveBayes()
+    neigh.fit(training_set1[0],training_set1[1])
+
+    print(neigh.predict_proba(X1[150:152]))
+    print(neigh.predict(X1[150:160]))
+    neightest = GaussianNB()
+    neightest.fit(training_set1[0],training_set1[1])
+    print(neightest.predict_proba(X1[150:152]))
+    print(neightest.predict(X1[150:160]))
     '''
-    X,y = make_data2(2000)
-    estimator = GaussianNaiveBayes().fit(X,y)
-    print(estimator.theta_)
-    print(estimator.sigma_)
+    plot_boundary("NB_set1", neigh, test_set1[0], test_set1[1])
     '''
-    classes = [0,1]
-    mat = np.matrix([[0.4, 0.7, 0.6],[0.6, 0.3, 0.5]])
-    print(np.argmax([0, 4, 8]))

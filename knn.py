@@ -253,7 +253,7 @@ def optimize(n_max, make_data, nb_fold):
 
     return [best_score, best_neigh]
 
-def question24(n_max):
+def question24(n_max, n_iter):
     '''This function uses a ten-fold cross validation strategy to optimize the value of
         the n_neighbors parameter for two datasets.
 
@@ -261,6 +261,9 @@ def question24(n_max):
         ---------
         n_max: int > 0
             the range of n_neighbours parameters that are going to be tested
+
+        n_iter: int > 0
+            numbers of iterations
 
         Return
         ------
@@ -273,8 +276,13 @@ def question24(n_max):
         '''
 
     nb_fold = 10
-    [best_score1, best_neigh1] = optimize(n_max, make_data1, nb_fold)
-    [best_score2, best_neigh2] = optimize(n_max, make_data2, nb_fold)
+    best_score1 = np.zeros(n_iter)
+    best_score2 = np.zeros(n_iter)
+    best_neigh1 = np.zeros(n_iter)
+    best_neigh2 = np.zeros(n_iter)
+    for i in range(n_iter):
+        [best_score1[i], best_neigh1[i]] = optimize(n_max, make_data1, nb_fold)
+        [best_score2[i], best_neigh2[i]] = optimize(n_max, make_data2, nb_fold)
     return [best_score1, best_neigh1, best_score2, best_neigh2]
 
 if __name__ == "__main__":
@@ -291,7 +299,7 @@ if __name__ == "__main__":
     #question22(10, 100, 10, X1, y1, X2, y2)
 
     #Question 2.3
-    #question23(1, 100, 100)
+    #question23(1, 149, 149)
 
     #Question 2.4
-    print(question24(100))
+    print(question24(50, 10))
