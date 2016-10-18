@@ -196,6 +196,7 @@ if __name__ == "__main__":
     neightest.fit(training_set1[0],training_set1[1])
     print(neightest.predict_proba(X1[150:152]))
     print(neightest.predict(X1[150:160]))
-    '''
+
     plot_boundary("NB_set1", neigh, test_set1[0], test_set1[1])
-    '''
+    plot_boundary("NB_set1_check", neightest, test_set1[0], test_set1[1])
+

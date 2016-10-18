@@ -214,6 +214,26 @@ def question23(n_min, n_max, n_iter):
 
 # ----- Question 2.4 ------ #
 
+def histQuestion24(data_name, best_neighbours):
+    '''This function plots an histogram of the values contained in the vector
+    best_neighbours
+
+    Parameters
+    ----------
+    data_name: string
+       name of the data set on which the cross validation algorithm was used
+
+    best_neighbours: np.matrix
+        this vector contains the number of neighbours that optimized a cross validation algorithm
+    '''
+
+    plt.hist(best_neighbours, bins=20)
+    plt.xlabel('Optimal numbers of neighbours')
+    plt.ylabel('Number of occurences')
+    plt.title("Histogramme of best neighbours for " + data_name + " with " + str(len(best_neighbours)) + " iterations")
+    plt.show()
+
+
 def optimize(n_max, make_data, nb_fold):
     '''This function uses a k-fold cross validation strategy to optimize the value of
         the n_neighbors parameter.
@@ -258,7 +278,7 @@ def question24(n_max, n_iter):
         the n_neighbors parameter for two datasets.
 
         Parameters
-        ---------
+        ----------
         n_max: int > 0
             the range of n_neighbours parameters that are going to be tested
 
@@ -283,6 +303,10 @@ def question24(n_max, n_iter):
     for i in range(n_iter):
         [best_score1[i], best_neigh1[i]] = optimize(n_max, make_data1, nb_fold)
         [best_score2[i], best_neigh2[i]] = optimize(n_max, make_data2, nb_fold)
+
+    #Plot the results
+    histQuestion24("DataSet1", best_neigh1)
+    histQuestion24("DataSet2", best_neigh2)
     return [best_score1, best_neigh1, best_score2, best_neigh2]
 
 if __name__ == "__main__":
@@ -302,4 +326,4 @@ if __name__ == "__main__":
     #question23(1, 149, 149)
 
     #Question 2.4
-    print(question24(50, 10))
+    print(question24(50, 1000))
