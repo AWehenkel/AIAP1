@@ -177,26 +177,28 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
             p[cl] = self.prior_[cl]
             for fe in range(0, len(X)):
                 p[cl] *= self.__gauss_cond_proba(fe, cl, X[fe])
-        return p
+        return p/p.sum()
 
 if __name__ == "__main__":
     from data import make_data1
+    from data import make_data2
     from plot import plot_boundary
     from sklearn.naive_bayes import GaussianNB
 
     X1,y1 = make_data1(2000)
-    training_set1 = [X1[0:149],y1[0:149]]
-    test_set1 = [X1[150::],y1[150::]]
+    training_set1 = [X1[:149],y1[:149]]
+    test_set1 = [X1[150:],y1[150:]]
     neigh = GaussianNaiveBayes()
     neigh.fit(training_set1[0],training_set1[1])
 
-    print(neigh.predict_proba(X1[150:152]))
-    print(neigh.predict(X1[150:160]))
-    neightest = GaussianNB()
-    neightest.fit(training_set1[0],training_set1[1])
-    print(neightest.predict_proba(X1[150:152]))
-    print(neightest.predict(X1[150:160]))
+    question = neigh.predict(X1[150:])
+    print(question)
+    #neightest = GaussianNB()
+    #neightest.fit(training_set1[0],training_set1[1])
+    #correct = neightest.predict(X1[150:])
+    #print(correct)
+    print(1.0 - float(np.absolute(y1[150:] - question).sum())/1850.0)
 
-    plot_boundary("NB_set1", neigh, test_set1[0], test_set1[1])
-    plot_boundary("NB_set1_check", neightest, test_set1[0], test_set1[1])
+    #plot_boundary("NB_set1", neigh, test_set1[0], test_set1[1])
+    #plot_boundary("NB_set1_check", neightest, test_set1[0], test_set1[1])
 

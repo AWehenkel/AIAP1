@@ -45,7 +45,6 @@ def plot_boundary(fname, fitted_estimator, X, y, mesh_step_size=0.1, title=""):
     else:
         Z = fitted_estimator.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
     Z = Z.reshape(xx.shape)
-    print(Z)
 
     # Plot the decision boundary. For that, we will assign a color to each
     # point in the mesh [x_min, m_max]x[y_min, y_max].
