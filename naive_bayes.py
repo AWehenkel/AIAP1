@@ -155,7 +155,9 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
                 """
         theta = self.theta_[y,x]
         sigma = self.sigma_[y,x]
-        return norm(theta, sigma).pdf(xval)
+        proba = 1/np.sqrt(2*np.pi*sigma)*np.exp(-((xval - theta)**2)/(2*sigma))
+        #return norm(theta, sigma).pdf(xval)
+        return proba
 
     def __predict_once_proba(self, X):
         """Return probability estimates for the test data X.
@@ -192,13 +194,14 @@ if __name__ == "__main__":
     neigh.fit(training_set1[0],training_set1[1])
 
     question = neigh.predict(X1[150:])
-    print(question)
+    #print(question)
     #neightest = GaussianNB()
     #neightest.fit(training_set1[0],training_set1[1])
     #correct = neightest.predict(X1[150:])
     #print(correct)
     print(1.0 - float(np.absolute(y1[150:] - question).sum())/1850.0)
+    #print(1.0 - float(np.absolute(y1[150:] - correct).sum()) / 1850.0)
 
-    #plot_boundary("NB_set1", neigh, test_set1[0], test_set1[1])
-    #plot_boundary("NB_set1_check", neightest, test_set1[0], test_set1[1])
+    plot_boundary("NB_set2", neigh, test_set1[0], test_set1[1])
+    #plot_boundary("NB_set2_check", neightest, test_set1[0], test_set1[1])
 

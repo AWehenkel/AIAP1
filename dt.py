@@ -28,6 +28,30 @@ from plot import plot_boundary
 # (Question 1)
 
 def trainAndPlot(data, nb_training, dt_max_depth, file_name = "default"):
+    '''This function builds a decision model on one training set
+        and displays the decision boundary with the corresponding testing sets.
+
+        Parameters
+        ----------
+        dt_max_depth  : int > 0
+            maximum depth of the decision tree model
+
+        data    :   list(X, y)
+            Where
+                X : array of shape [n_samples, nb_feature]
+                The input samples.
+
+                y : array of shape [n_samples]
+                The output values.
+
+        nb_training :   int > 0
+            The number of sample that will be used for the training
+
+        file_name   :   string
+            The name of the file to register the plot.
+
+        '''
+
     training = [data[0][:nb_training], data[1][:nb_training]]
     testing = [data[0][nb_training + 1:], data[1][nb_training + 1:]]
     dt = DecisionTreeClassifier(max_depth=dt_max_depth)
