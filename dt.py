@@ -59,6 +59,30 @@ def trainAndPlot(data, nb_training, dt_max_depth, file_name = "default"):
     plot_boundary(file_name, dt, testing[0], testing[1])
 
 def trainAndComputeErrors(data, nb_training, dt_max_depth):
+    '''This function builds a decision model on one training set
+        and return testing error and training error with the corresponding testing sets.
+
+        Parameters
+        ----------
+        dt_max_depth  : int > 0
+            maximum depth of the decision tree model
+
+        data    :   list(X, y)
+            Where
+                X : array of shape [n_samples, nb_feature]
+                The input samples.
+
+                y : array of shape [n_samples]
+                The output values.
+
+        nb_training :   int > 0
+            The number of sample that will be used for the training
+
+        Returns
+        -------
+        errors : list of the form = (training_error, testing_error)
+            The percentage of error on the training set and on the testing set.
+        '''
     training = [data[0][:nb_training], data[1][:nb_training]]
     testing = [data[0][nb_training + 1:], data[1][nb_training + 1:]]
     dt = DecisionTreeClassifier(max_depth=dt_max_depth)
@@ -68,6 +92,29 @@ def trainAndComputeErrors(data, nb_training, dt_max_depth):
     return (training_error, testing_error)
 
 def plotForQuestion3(data, nb_training, dt_max_depth, title):
+    '''This function builds a decision model on one training set
+        and plot the error curves(on training and testing) with value of max depth between 1 and dt_max_depth.
+
+        Parameters
+        ----------
+        dt_max_depth  : int > 0
+            maximum depth to compute the error.
+
+        data    :   list(X, y)
+            Where
+                X : array of shape [n_samples, nb_feature]
+                The input samples.
+
+                y : array of shape [n_samples]
+                The output values.
+
+        nb_training :   int > 0
+            The number of sample that will be used for the training
+
+        title   :   string
+            The name of the file to register the plot.
+
+        '''
     training_error = []
     testing_error = []
     for depth in range(1, dt_max_depth):
@@ -89,13 +136,51 @@ def plotForQuestion3(data, nb_training, dt_max_depth, title):
     pyplot.title(title)
     pyplot.show()
 
-def trainAndCrossScore(data, max_depth, nb_fold):
-    dt = DecisionTreeClassifier(max_depth=max_depth)
+def trainAndCrossScore(data, dt_max_depth, nb_fold):
+    '''This function computes the k-fold cross score for the decision tree.
+
+        Parameters
+        ----------
+        dt_max_depth  : int > 0
+            maximum depth of the decision tree model.
+
+        data    :   list(X, y)
+            Where
+                X : array of shape [n_samples, nb_feature]
+                The input samples.
+
+                y : array of shape [n_samples]
+                The output values.
+
+        nb_fold :   int > 0
+            The number of subset, number k.
+
+        '''
+    dt = DecisionTreeClassifier(max_depth=dt_max_depth)
     return cross_val_score(dt, data[0], data[1], cv=nb_fold)
 
-def crossOptimize(data, nb_fold, max_depth):
+def crossOptimize(data, nb_fold, dt_max_depth):
+    '''This function computes the best max_depth parameter with a k-fold cross score optimization.
+
+            Parameters
+            ----------
+            dt_max_depth  : int > 0
+                maximum depth of the decision tree model.
+
+            data    :   list(X, y)
+                Where
+                    X : array of shape [n_samples, nb_feature]
+                    The input samples.
+
+                    y : array of shape [n_samples]
+                    The output values.
+
+            nb_fold :   int > 0
+                The number of subset, number k.
+
+            '''
     max_v = [0, 0]
-    for depth in range(1, max_depth + 1):
+    for depth in range(1, dt_max_depth + 1):
         result = trainAndCrossScore(data, depth, nb_fold)
         result = sum(result) / len(result)
         if (result > max_v[0]):
@@ -130,7 +215,7 @@ if __name__ == "__main__":
 
     #Tests Q4
     #crossOptimize(set1, 10, 25)
-    crossOptimize(set2, 10, 45)
+    #crossOptimize(set2, 10, 45)
 
 
 
