@@ -187,16 +187,23 @@ if __name__ == "__main__":
     import matplotlib.mlab as mlab
     import matplotlib.pyplot as plt
 
-    #Create the data set
-    X1,y1 = make_data2(2000) #Choose which data set you use
-    training_set1 = [X1[:149],y1[:149]]
-    test_set1 = [X1[150:],y1[150:]]
-    neigh = GaussianNaiveBayes()
-    neigh.fit(training_set1[0],training_set1[1])
+    test_precision = 0
+    training_precision = 0
+    for i in range(500):
+        #Create the data set
+        X1,y1 = make_data2(2000) #Choose which data set you use
+        training_set1 = [X1[:149],y1[:149]]
+        test_set1 = [X1[150:],y1[150:]]
+        neigh = GaussianNaiveBayes()
+        neigh.fit(training_set1[0],training_set1[1])
 
-    #Compute the precision
-    prediction = neigh.predict(X1[150:])
-    print(1.0 - float(np.absolute(y1[150:] - prediction).sum())/1850.0)
+        #Compute the precision
+        test_prediction = neigh.predict(X1[150:])
+        test_precision += 1.0 - float(np.absolute(y1[150:] - test_prediction).sum())/1850.0
+        training_prediction = neigh.predict(X1[:149])
+        training_precision += 1.0 - float(np.absolute(y1[:149] - training_prediction).sum())/150.0
+    print(test_precision/500)
+    print(training_precision/500)
 
     #Gaussian display
     sigma1 = neigh.sigma_
