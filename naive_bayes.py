@@ -184,24 +184,44 @@ class GaussianNaiveBayes(BaseEstimator, ClassifierMixin):
 if __name__ == "__main__":
     from data import make_data1
     from data import make_data2
-    from plot import plot_boundary
-    from sklearn.naive_bayes import GaussianNB
+    import matplotlib.mlab as mlab
+    import matplotlib.pyplot as plt
 
-    X1,y1 = make_data1(2000)
+    #Create the data set
+    X1,y1 = make_data2(2000) #Choose which data set you use
     training_set1 = [X1[:149],y1[:149]]
     test_set1 = [X1[150:],y1[150:]]
     neigh = GaussianNaiveBayes()
     neigh.fit(training_set1[0],training_set1[1])
 
-    question = neigh.predict(X1[150:])
-    #print(question)
-    #neightest = GaussianNB()
-    #neightest.fit(training_set1[0],training_set1[1])
-    #correct = neightest.predict(X1[150:])
-    #print(correct)
-    print(1.0 - float(np.absolute(y1[150:] - question).sum())/1850.0)
-    #print(1.0 - float(np.absolute(y1[150:] - correct).sum()) / 1850.0)
+    #Compute the precision
+    prediction = neigh.predict(X1[150:])
+    print(1.0 - float(np.absolute(y1[150:] - prediction).sum())/1850.0)
 
-    plot_boundary("NB_set2", neigh, test_set1[0], test_set1[1])
+    #Gaussian display
+    sigma1 = neigh.sigma_
+    sigma2 = sigma1
+    x = np.linspace(-3, 3, 1000)
+    for i in range(2):
+        sigma1[0][i] = neigh.sigma_[0][i]
+        sigma1[1][i] = neigh.sigma_[1][i]
+        gauss1 = mlab.normpdf(x, neigh.theta_[0][i], sigma1[0][i])
+        gauss2 = mlab.normpdf(x, neigh.theta_[1][i], sigma2[1][i])
+        twodgauss = np.zeros((len(gauss1), len(gauss1)), dtype=np.float)
+        for d1 in range(len(gauss1)):
+            for d2 in range(len(gauss2)):
+                twodgauss[d1][d2] = gauss1[d1]*gauss2[d2]
+        CS = plt.contour(x, x, twodgauss)
+        CB = plt.colorbar(CS, shrink=0.8, extend='both')
+        plt.title('Data set 2 - Feature ' + str(i+1))
+        plt.xlabel('X_0')
+        plt.ylabel('X_1')
+        plt.show()
+
+
+
+
+
+    #plot_boundary("NB_set2", neigh, test_set1[0], test_set1[1])
     #plot_boundary("NB_set2_check", neightest, test_set1[0], test_set1[1])
 
