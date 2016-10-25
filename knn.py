@@ -318,18 +318,18 @@ def question24(n_max, n_iter):
 if __name__ == "__main__":
 
     #Tests
-    #X1,y1 = make_data1(2000)
-    #X2,y2 = make_data2(2000)
+    X1,y1 = make_data1(2000)
+    X2,y2 = make_data2(2000)
 
     #Question 2.1
-    #question21(5, X1, y1, X2, y2, "test21")
+    question21(5, X1, y1, X2, y2, "test21")
 
     #Question 2.2
-    #question22(1, 9, 1, X1, y1, X2, y2)
-    #question22(10, 100, 10, X1, y1, X2, y2)
+    question22(1, 9, 1, X1, y1, X2, y2)
+    question22(10, 100, 10, X1, y1, X2, y2)
 
     #Question 2.3
-    #question23(1, 149, 149)
+    question23(1, 149, 149)
 
     #Question 2.4
     score = question24(50, 100)
