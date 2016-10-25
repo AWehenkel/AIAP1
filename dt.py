@@ -200,18 +200,18 @@ if __name__ == "__main__":
     #trainAndPlot(set2, 150, None, "set2")
 
     #Tests Q2
-    #for depth in range(1, 10):
+    """for depth in range(1, 10):
         #trainAndPlot(set1, 150, depth, ("set1_depth%d" % depth))
-        #trainAndPlot(set2, 150, depth, ("set2_depth%d" % depth))
+        #trainAndPlot(set2, 150, depth, ("set2_depth%d" % depth))"""
 
     #Tests Q3
-    #sets1 = []
-    #sets2 = []
-    #for i in range(0, 10):
-        #sets1.append(make_data1(2000))
-        #sets2.append(make_data2(2000))
-    #plotForQuestion3(sets1, 150, 15, "dataset 1")
-    #plotForQuestion3(sets2, 150, 15, "dataset 2")
+    """sets1 = []
+    sets2 = []
+    for i in range(0, 10):
+        sets1.append(make_data1(2000))
+        sets2.append(make_data2(2000))
+    plotForQuestion3(sets1, 150, 25, "dataset 1")
+    plotForQuestion3(sets2, 150, 25, "dataset 2")"""
 
     #Tests Q4
     #crossOptimize(set1, 10, 25)
