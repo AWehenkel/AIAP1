@@ -230,7 +230,7 @@ def histQuestion24(data_name, best_neighbours):
     plt.hist(best_neighbours, bins=20)
     plt.xlabel('Optimal numbers of neighbours')
     plt.ylabel('Number of occurences')
-    plt.title("Histogramme of best neighbours for " + data_name + " with " + str(len(best_neighbours)) + " iterations")
+    plt.title("Histogram of best neighbours for " + data_name + " with " + str(len(best_neighbours)) + " iterations")
     plt.show()
 
 
@@ -306,7 +306,13 @@ def question24(n_max, n_iter):
 
     #Plot the results
     histQuestion24("DataSet1", best_neigh1)
+    mean1 = np.average(best_neigh1)
+    std1 = np.std(best_neigh1)
+    print("The mean is " + str(mean1) + " and the std is " + str(std1) + " for data set 1")
     histQuestion24("DataSet2", best_neigh2)
+    mean2 = np.average(best_neigh2)
+    std2 = np.std(best_neigh2)
+    print("The mean is " + str(mean2) + " and the std is " + str(std2) + " for data set 2")
     return [best_score1, best_neigh1, best_score2, best_neigh2]
 
 if __name__ == "__main__":
@@ -326,4 +332,5 @@ if __name__ == "__main__":
     #question23(1, 149, 149)
 
     #Question 2.4
-    print(question24(50, 1000))
+    score = question24(50, 100)
+    print(np.mean(score[0]), np.std(score[0]), np.mean(score[2]), np.std(score[2]))
