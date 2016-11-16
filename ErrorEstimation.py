@@ -32,8 +32,8 @@ def computeErrors(nb_estimation, sample_size, sample_range, estimator, x, y_func
         y_estimated[:, i] = estimator.predict(x)
 
     bias = np.mean(true_y - y_estimated, 1)
-    variance_y = np.std(true_y, 1)
-    variance_est = np.std(y_estimated, 1)
+    variance_y = np.std(true_y, 1, ddof=1)
+    variance_est = np.std(y_estimated, 1, ddof=1)
 
     print(np.sum(np.square(true_y - y_estimated))/nb_estimation)
     print(np.square(bias) + np.square(variance_y) + np.square(variance_est))
