@@ -1,8 +1,20 @@
 import numpy as np
 from sklearn import linear_model
 """
+computeErrors:
+Def: This function computes empirically the 3 types of error of a supervised
+        learning algorithm on a given distribution function.
 
-
+IN:
+    nb_estimation: int, the number of model build to estimates error.
+    sample_size: int, The size of each sample used to build  each model.
+    sample_range: np.matrix with shape (n_feature, 2), The range of values of each
+                    feature
+    estimator: An estimator with function fit and predict(with same behavior as sklearn estimator)
+    x: A np.array with shape (n_feature, n_point), the feature point where the errors will be estimated
+    y_function: A function which takes a np.array with shape (n_feature, n_point) and possibly
+                supplementary arguments, this function defines the distributuion.
+    y_arguments: *, supplementary argument of the y_function
 """
 def computeErrors(nb_estimation, sample_size, sample_range, estimator, x, y_function, *y_arguments):
     nb_point = x.size
@@ -35,7 +47,6 @@ def yFunction(x, param):
     e = np.random.normal(mu_e, sigma_e, x.shape)
     return (np.multiply(x, np.square(np.cos(x) + np.sin(x))) + e)
 
-#print(yFunction(np.matrix('1'), 1, 1))
 # Create linear regression object
 regr = linear_model.LinearRegression()
 print(computeErrors(100000, 10, np.matrix('-10; 10'), regr, np.array([[1]]), yFunction, 0.5, 0))
