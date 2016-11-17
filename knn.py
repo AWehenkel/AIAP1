@@ -321,6 +321,8 @@ if __name__ == "__main__":
     X1,y1 = make_data1(2000)
     X2,y2 = make_data2(2000)
 
+    print(X2[0:149])
+    '''
     #Question 2.1
     question21(5, X1, y1, X2, y2, "test21")
 
@@ -334,3 +336,4 @@ if __name__ == "__main__":
     #Question 2.4
     score = question24(50, 100)
     print(np.mean(score[0]), np.std(score[0]), np.mean(score[2]), np.std(score[2]))
+    '''
