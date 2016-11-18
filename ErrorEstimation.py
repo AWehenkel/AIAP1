@@ -53,52 +53,7 @@ def yFunction(x, param):
     e = np.random.normal(mu_e, sigma_e, x.shape)
     return (np.multiply(x, np.square(np.cos(x) + np.sin(x))) + e)
 
-def plotBiasVarNoise(title_model, noise_sqbias_var, interval, nb_points):
-    '''This function plots the bias, variance and noise for a series of points
-
-    Parameters
-    ----------
-    title_model : string
-        the name of the model to which the three parameters are related
-
-    noise_sqbias_var: np.array of shape (3, nb_points)
-        array containing the bias, variance and noise for a series of points
-
-    interval: array of shape (1, 2)
-        limits between which the points were taken
-
-    nb_points: int > 0
-        number of points for which the three parameters were computed
-    '''
-
-    x_array = np.linspace(interval[0], interval[1], nb_points)
-
-    plt.figure(1)
-    plt.plot(x_array, noise_sqbias_var[0], 'r')
-    plt.plot(x_array, noise_sqbias_var[1], 'b')
-    plt.plot(x_array, noise_sqbias_var[2], 'g')
-    r_patch = patches.Patch(color='r', label='Noise')
-    b_patch = patches.Patch(color='b', label='Squared Biais')
-    g_patch = patches.Patch(color='g', label='Variance')
-    plt.legend(handles=[r_patch, b_patch, g_patch])
-    plt.title(title_model)
-    plt.xlabel("x")
-    plt.show()
-
-    plt.figure(1)
-    plt.subplot(311)
-    plt.plot(x_array, noise_sqbias_var[0], 'r')
-    plt.title(title_model + " - Noise")
-    plt.subplot(312)
-    plt.plot(x_array, noise_sqbias_var[1], 'b')
-    plt.title(title_model + " - Biais")
-    plt.subplot(313)
-    plt.plot(x_array, noise_sqbias_var[2], 'g')
-    plt.title(title_model + " - Variance")
-    plt.xlabel("x")
-    plt.show()
-
-def plotErrors(title_model, errors,  x_range, x_label):
+def plotErrors(title_model, errors, x_range, x_label):
     '''
     This function plots the four errors relatively to a certain feature for
     a certain model
@@ -107,7 +62,7 @@ def plotErrors(title_model, errors,  x_range, x_label):
     ----------
     title_model, string
         the name of the model
-    errors, np.array of shape (range, 4)
+    errors, np.array of shape (4, range)
         the four errors for different values of the feature
     x_range
         the different values of the the feature
@@ -116,20 +71,32 @@ def plotErrors(title_model, errors,  x_range, x_label):
     '''
 
     plt.figure(1)
+    plt.plot(x_array, errors[0], 'r')
+    plt.plot(x_array, errors[1], 'b')
+    plt.plot(x_array, errors[2], 'g')
+    plt.plot(x_array, errors[3], 'k')
+    r_patch = patches.Patch(color='r', label='Noise')
+    b_patch = patches.Patch(color='b', label='Squared Biais')
+    g_patch = patches.Patch(color='g', label='Variance')
+    k_patch = patches.Patch(color='k', label='Squared error')
+    plt.legend(handles=[r_patch, b_patch, g_patch, k_patch])
+    plt.title(title_model)
+    plt.xlabel("x")
+    plt.show()
+
+    plt.figure(1)
     plt.subplot(221)
-    plt.plot(x_range, errors[:,0], 'r')
+    plt.plot(x_range, errors[0], 'r')
     plt.title(title_model + " - Noise")
-    plt.xlabel(x_label)
     plt.subplot(222)
-    plt.plot(x_range, errors[:,1], 'b')
+    plt.plot(x_range, errors[1], 'b')
     plt.title(title_model + " - Biais")
-    plt.xlabel(x_label)
     plt.subplot(223)
-    plt.plot(x_range, errors[:,2], 'g')
+    plt.plot(x_range, errors[2], 'g')
     plt.title(title_model + " - Variance")
     plt.xlabel(x_label)
     plt.subplot(224)
-    plt.plot(x_range, errors[:,3], 'c')
+    plt.plot(x_range, errors[3], 'k')
     plt.title(title_model + " - Squared error")
     plt.xlabel(x_label)
     plt.show()
@@ -150,13 +117,13 @@ def LSSizeInfluence(title_model, model):
         An estimator with function fit and predict(with same behavior as
         sklearn estimator)
     '''
-    nb_estimations = 100
+    nb_estimations = 1000
     nb_points = 1000
-    start = 101
+    start = 1
     stop = 1001
     step = 100
     sizes_range = range(start, stop, step)
-    means = np.zeros(((stop-start)/step, 4))
+    means = np.zeros((4, (stop-start)/step))
     x_array = np.zeros((nb_points,1))
 
     i = 0
@@ -167,7 +134,7 @@ def LSSizeInfluence(title_model, model):
     i = 0
     for nb_samples in sizes_range:
         errors = computeErrors(nb_estimations, nb_samples, np.matrix('-10; 10'), model, x_array, 1, yFunction, 0.5, 0)
-        means[i,:] = np.ravel(np.mean(errors[:],1))
+        means[:,i] = np.ravel(np.mean(errors[:],1))
         i += 1
 
     plotErrors(title_model, means, sizes_range, 'LS size')
@@ -185,7 +152,7 @@ def kNNComplexityInfluence():
     stop = 50
     step = 1
     k_range = range(start, stop, step)
-    means = np.zeros(((stop-start)/step, 4))
+    means = np.zeros((4,(stop-start)/step))
     x_array = np.zeros((nb_points,1))
 
     i = 0
@@ -197,7 +164,7 @@ def kNNComplexityInfluence():
     for k in k_range:
         model = KNeighborsRegressor(n_neighbors=n_neighbours)
         errors = computeErrors(nb_estimations, nb_samples, np.matrix('-10; 10'), model, x_array, 1, yFunction, 0.5, 0)
-        means[i,:] = np.ravel(np.mean(errors[:],1))
+        means[:, i] = np.ravel(np.mean(errors[:],1))
         i += 1
 
     plotErrors("kNN", means, k_range, 'k')
@@ -225,7 +192,7 @@ def stdNoiseInfluence(title_model, model):
     stop = 0.5
     nb_steps = 100
     epsilon_range = np.linspace(start, stop, nb_steps)
-    means = np.zeros((nb_steps, 4))
+    means = np.zeros((4,nb_steps))
     x_array = np.zeros((nb_points,1))
 
     i = 0
@@ -236,7 +203,7 @@ def stdNoiseInfluence(title_model, model):
     i = 0
     for epsilon in epsilon_range:
         errors = computeErrors(nb_estimations, nb_samples, np.matrix('-10; 10'), model, x_array, 1, yFunction, epsilon, 0)
-        means[i,:] = np.ravel(np.mean(errors[:],1))
+        means[:,i] = np.ravel(np.mean(errors[:],1))
         i += 1
 
     plotErrors(title_model, means, epsilon_range, 'epsilon')
@@ -245,10 +212,9 @@ def stdNoiseInfluence(title_model, model):
 if __name__ == "__main__":
 
     # Question 2.b
-    '''
     nb_estimations = 10000
     nb_points = 1000
-    nb_samples = 1000
+    nb_samples = 10000
     x_array = np.zeros((nb_points,1))
 
     i = 0
@@ -257,21 +223,22 @@ if __name__ == "__main__":
         i += 1
 
     # Linear regression method
+    '''
     regr = linear_model.LinearRegression()
     lin_errors = computeErrors(nb_estimations, nb_samples, np.matrix('-10; 10'), regr, x_array, 1, yFunction, 0.5, 0)
-    plotBiasVarNoise("Linear Model", lin_errors, [-10, 10], nb_points)
-
+    plotErrors("Linear Model", lin_errors, np.ravel(x_array), 'x')
+    '''
     # Non-linear regression method: kNN
     n_neighbours = 10
     neigh = KNeighborsRegressor(n_neighbors=n_neighbours)
     kNN_errors = computeErrors(nb_estimations, nb_samples, np.matrix('-10; 10'), neigh, x_array, 1, yFunction, 0.5, 0)
-    plotBiasVarNoise("Non-Linear Model - kNN - " + str(n_neighbours),kNN_errors[1:3], [-10,10], nb_points)
+    plotErrors("kNN - " + str(n_neighbours), kNN_errors, np.ravel(x_array), 'x')
 
     '''
     # Question 2.d
     #Linear regression method
     regr = linear_model.LinearRegression()
-    #LSSizeInfluence("Linear Model", regr)
+    LSSizeInfluence("Linear Model", regr)
     #stdNoiseInfluence("Linear Model", regr)
 
     # Non-linear regression method: kNN
@@ -280,3 +247,4 @@ if __name__ == "__main__":
     #LSSizeInfluence("kNN - " + str(n_neighbours), neigh)
     #stdNoiseInfluence("kNN - " + str(n_neighbours), neigh)
     kNNComplexityInfluence()
+    '''
