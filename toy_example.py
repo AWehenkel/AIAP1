@@ -25,6 +25,53 @@ def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True
             f.write(line)
     print("Submission file successfully written!")
 
+def userDataNormalize(data):
+    data_size = data.shape[0]
+    user_id = np.zeros(data_size)
+    age = np.zeros(data_size)
+    inv_nb_age_cat = 20
+    genders = np.zeros(data_size)
+    occupations = []
+    zip_codes = np.zeros(data_size)
+    len_code = 2
+
+    for i in range(data_size):
+        user_id[i] = int(data.iloc[i]["user_id"])
+        #Divide the age by a bigger number if we want fewer age categories
+        age[i] = int(data.iloc[i]["age"]/inv_nb_age_cat)
+        #Store M as 0 and F as 1
+        gender = data.iloc[i]["gender"]
+        if(gender == "F"):
+            genders[i] = 1
+        #Create a list of all occupations
+        occupation = data.iloc[i]["occupation"]
+        if occupation not in occupations:
+            occupations.append(occupation)
+        #Store only the len_code first digits of the zip_code
+        zip_code = data.iloc[i]["zip_code"]
+        min_len = min([len_code, len(zip_code)])
+        zip_code_begin = zip_code[0:len_code]
+        if(zip_code_begin[0].isdigit()):
+            zip_codes[i] = int(zip_code_begin.lstrip())
+        else:
+            zip_codes[i] = 0 #Je ne sais pas trop quoi faire des zip_code qui contiennent des lettres ...
+
+    with open("user_data_normalized.csv", 'w') as f:
+        f.write('"user_id","age","gender","zip_code"')
+        for occupation in occupations:
+            f.write(',"%s"' % occupation)
+        f.write('\n')
+
+        for i in range(data_size):
+            line = '{:0.0f},{:0.0f},{:0.0f},{:0.0f}'.format(user_id[i], age[i], genders[i], zip_codes[i])
+            for occupation in occupations:
+                if(occupation == data.iloc[i]["occupation"]):
+                    line += ',{:0.0f}'.format(1)
+                else:
+                    line += ',{:0.0f}'.format(0)
+            line += '\n'
+            f.write(line)
+
 def movieDataNormalizer(data):
     data_size = data.shape[0]
     year = np.zeros(data_size)
@@ -107,11 +154,12 @@ if __name__ == "__main__":
 
     # Load user info
     data_user = pd.read_csv('data/data_user.csv', delimiter=',')
+    userDataNormalize(data_user)
 
     # Load movie info
     data_movie = pd.read_csv('data/data_movie.csv', delimiter=',', encoding="latin_1")
     #pd.read_cs
-    movieDataNormalizer(data_movie)
+    #movieDataNormalizer(data_movie)
     # Create matrix "users x movies" for training data
 
     n_users = len(np.unique(data_user['user_id']))
