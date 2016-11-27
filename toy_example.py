@@ -21,42 +21,76 @@ def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True
         for i in range(n_elements):
             if np.isnan(y_predict[i]):
                 raise ValueError('NaN detected!')
-            line = '{:0.0f}_{:0.0f},{}\n'.format(user_id_test[i],movie_id_test[i],y_predict[i])
+            line = '{:0.0f},{:0.0f},{}\n'.format(user_id_test[i],movie_id_test[i],y_predict[i])
             f.write(line)
     print("Submission file successfully written!")
 
 def movieDataNormalizer(data):
-    year = np.zeros(data.shape[0])
-    date = np.zeros(data.shape[0])
-    movie_type_cast_int = np.zeros(data.shape[0])
-    movie_id_available = np.zeros(data.shape[0])
-    h = 0
-    for i in range(data.shape[0]):
+    data_size = data.shape[0]
+    year = np.zeros(data_size)
+    date = np.zeros(data_size)
+    movie_type_cast_int = np.zeros(data_size)
+    movie_id_available = np.zeros(data_size)
+    movie_title_size = np.zeros(data_size)
+    words = {}
+    nb_word = 20
+    most_used_word = ["" for i in range(nb_word)]
+    most_used_word_number = [0 for i in range(nb_word)]
+
+
+    for i in range(data_size):
+        print(i)
         if(data.loc[i]["unknown"] == 0):
-            movie_id_available[h] = i
-            year[h] = datetime.datetime.strptime(data.loc[i]["release_date"], "%d-%b-%Y").year
-            date[h] = time.mktime(datetime.datetime.strptime(data.loc[i]["release_date"], "%d-%b-%Y").timetuple())
+            for word in data.loc[i]["movie_title"].replace(",", "").split("(")[0].split():
+                if(word[0] != "("):
+                    if word in words:
+                        words[word] += 1
+                    else:
+                        words[word] = 1
+            movie_title_size[i] = len(data.loc[i]["movie_title"])
+            movie_id_available[i] = i + 1
+            year[i] = datetime.datetime.strptime(data.loc[i]["release_date"], "%d-%b-%Y").year
+            date[i] = time.mktime(datetime.datetime.strptime(data.loc[i]["release_date"], "%d-%b-%Y").timetuple())
             for j in range(6, data.shape[1]):
-                movie_type_cast_int[h] += 2^(j - 6)*data.iloc[i][j]
-            h += 1
+                movie_type_cast_int[i] += 2^(j - 6)*data.iloc[i][j]
+        else:
+            movie_id_available[i] = -1
     date = (date - min(date))
     date = 1000*date/max(date)
-    normalized_data = np.matrix((h,4))
-    normalized_data = [movie_id_available[1:h], year[1:h], date[1:h], movie_type_cast_int[1:h]]
-    '''
-    words = {}
-    for i in data.loc[:]["movie_title"]:
-        #print(i.count(" "))
-        for word in i.split():
-            if word in words:
-                words[word] += 1
-            else:
-                words[word] = 1
-    for word in words:
-        if(words[word] > 4):
-            print(word)
-            print(words[word])
-    '''
+    #normalized_data = np.matrix((h,4))
+    #normalized_data = [movie_id_available[1:h], year[1:h], date[1:h], movie_type_cast_int[1:h]]
+
+    #Compute the nb_word words the most frequent in the titles
+    for key in words:
+        if (words[key] > min(most_used_word_number) and len(key) > 2 and not(key in ("The", "and", "the", "For", "for", "with"))):
+            id = most_used_word_number.index(min(most_used_word_number))
+            most_used_word[id] = key
+            most_used_word_number[id] = words[key]
+
+
+    #Compute the characteristic of the title
+    word_in_title = np.zeros((data_size, nb_word))
+    for movie_id in range(data_size):
+        for i in range(nb_word):
+            if most_used_word[i] in data.loc[movie_id]["movie_title"]:
+                word_in_title[movie_id][i] = 1
+    print("ok")
+    with open("movie_data_normalized.csv", 'w') as f:
+        f.write('"USER_ID_MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size"')
+        for movie_type in data.keys()[6:]:
+            f.write(',"%s"' % movie_type)
+        for word in most_used_word:
+            f.write(',"%s"' % word)
+        f.write('\n')
+
+        for i in range(data_size):
+            line = '{:0.0f},{:0.0f},{:0.3f},{:0.0f},{:0.0f}'.format(movie_id_available[i], year[i], date[i], movie_type_cast_int[i], movie_title_size[i])
+            for movie_type in data.keys()[6:]:
+                line += ',{:0.0f}'.format(data.iloc[i][movie_type])
+            for j in range(nb_word):
+                line += ',{:0.0f}'.format(word_in_title[i][j])
+            line += '\n'
+            f.write(line)
     #print(title)
 
 if __name__ == "__main__":
