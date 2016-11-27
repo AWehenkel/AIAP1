@@ -76,7 +76,7 @@ def movieDataNormalizer(data):
                 word_in_title[movie_id][i] = 1
     print("ok")
     with open("movie_data_normalized.csv", 'w') as f:
-        f.write('"USER_ID_MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size"')
+        f.write('"MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size"')
         for movie_type in data.keys()[6:]:
             f.write(',"%s"' % movie_type)
         for word in most_used_word:
