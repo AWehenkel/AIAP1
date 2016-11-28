@@ -29,7 +29,7 @@ def userDataNormalize(data):
     data_size = data.shape[0]
     user_id = np.zeros(data_size)
     age = np.zeros(data_size)
-    inv_nb_age_cat = 20
+    inv_nb_age_cat = 1
     genders = np.zeros(data_size)
     occupations = []
     zip_codes = np.zeros(data_size)
@@ -56,7 +56,7 @@ def userDataNormalize(data):
         else:
             zip_codes[i] = 0 #Je ne sais pas trop quoi faire des zip_code qui contiennent des lettres ...
 
-    with open("user_data_normalized.csv", 'w') as f:
+    with open("user_data_normalized" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
         f.write('"user_id","age","gender","zip_code"')
         for occupation in occupations:
             f.write(',"%s"' % occupation)
@@ -122,7 +122,7 @@ def movieDataNormalizer(data):
             if most_used_word[i] in data.loc[movie_id]["movie_title"]:
                 word_in_title[movie_id][i] = 1
     print("ok")
-    with open("movie_data_normalized.csv", 'w') as f:
+    with open("movie_data_normalized" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
         f.write('"MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size"')
         for movie_type in data.keys()[6:]:
             f.write(',"%s"' % movie_type)
@@ -140,12 +140,43 @@ def movieDataNormalizer(data):
             f.write(line)
     #print(title)
 
+
+def aggregateData(data, user, movie):
+    with open("agregated_data" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
+        #for el in data.keys():
+         #   f.write("%s," % el)
+        for el in user.keys()[1:]:
+            f.write('"%s",' % el)
+        for el in movie.keys()[1:-1]:
+            f.write('"%s",' % el)
+        f.write('"%s"\n' % movie.keys()[-1])
+
+        for i in range(data.shape[0]):
+            line = '';
+            #for el in data.iloc[i][:]:
+             #   line += '{:0.0f},'.format(el)
+
+            user_id = data.iloc[i]["user_id"]
+            for el in user.iloc[user_id - 1][1:]:
+                line += '{:0.0f},'.format(el)
+
+            print(i)
+            movie_id = data.loc[i]["movie_id"]
+            for el in movie.iloc[movie_id - 1][1:-1]:
+                line += '{:0.0f},'.format(el)
+
+            line += '{:0.0f}\n'.format(movie.loc[movie_id - 1][-1])
+            f.write(line)
+
+
 if __name__ == "__main__":
 
 
     # Load data_train
     data_train = pd.read_csv('data/data_train.csv', delimiter=',')
-
+    movie = pd.read_csv('movie_data_normalized.csv', delimiter=',')
+    user = pd.read_csv('user_data_normalized_28-11-2016_01h32.csv', delimiter=',')
+    aggregateData(data_train, user, movie)
     # Load output_train
     output_train = pd.read_csv('data/output_train.csv', delimiter=',')
 
@@ -154,7 +185,7 @@ if __name__ == "__main__":
 
     # Load user info
     data_user = pd.read_csv('data/data_user.csv', delimiter=',')
-    userDataNormalize(data_user)
+    #userDataNormalize(data_user)
 
     # Load movie info
     data_movie = pd.read_csv('data/data_movie.csv', delimiter=',', encoding="latin_1")
@@ -186,5 +217,4 @@ if __name__ == "__main__":
 
     #make_submission(y_predict, name="toy_submission", user_id_test=data_test['user_id'], movie_id_test=data_test['movie_id'])
     '''
-
 

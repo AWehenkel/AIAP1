@@ -1,4 +1,4 @@
-"USER_ID_MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size","Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western","Star","About","Love","Life","Blue","Movie","Paris","Night","Day","City","Time","Last","Men","American","King","Dead","Little","Boys","Man","Big"
+"MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size","Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western","Star","About","Love","Life","Blue","Movie","Paris","Night","Day","City","Time","Last","Men","American","King","Dead","Little","Boys","Man","Big"
 1,1997,980.288,59,21,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 2,1996,968.062,41,24,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 3,1971,637.949,40,23,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
