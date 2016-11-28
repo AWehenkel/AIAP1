@@ -142,7 +142,7 @@ def movieDataNormalizer(data):
 
 
 def aggregateData(data, user, movie):
-    with open("agregated_data" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
+    with open("agregated_data_test" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
         #for el in data.keys():
          #   f.write("%s," % el)
         for el in user.keys()[1:]:
@@ -176,12 +176,12 @@ if __name__ == "__main__":
     data_train = pd.read_csv('data/data_train.csv', delimiter=',')
     movie = pd.read_csv('movie_data_normalized.csv', delimiter=',')
     user = pd.read_csv('user_data_normalized_28-11-2016_01h32.csv', delimiter=',')
-    aggregateData(data_train, user, movie)
     # Load output_train
     output_train = pd.read_csv('data/output_train.csv', delimiter=',')
 
     # Load data_test
     data_test = pd.read_csv('data/data_test.csv', delimiter=',')
+    aggregateData(data_test, user, movie)
 
     # Load user info
     data_user = pd.read_csv('data/data_user.csv', delimiter=',')
