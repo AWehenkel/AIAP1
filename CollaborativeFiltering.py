@@ -82,18 +82,25 @@ movies = pd.read_csv("data/movie_data_normalized.csv", delimiter=",")
 train = pd.read_csv("data/data_train.csv", delimiter=",")
 output = pd.read_csv("data/output_train.csv", delimiter=",")
 nb_estim = 10
-for nn in range(5, 20):
-    score = 0.0
-    for i in range(nb_estim):
-        rand = random.sample(range(1, train.values.shape[0]), int(train.values.shape[0]/2))
-        model = CollaborativeFiltering(preprocessing.scale(users.values[:, 1:]), preprocessing.scale(movies.values[:, 1:]), train.values[rand], output.values[rand], n_movie_neighbor=nn, n_user_neighbor=nn)
-        #print(model.getUserMovies(0))
-        test = pd.read_csv("data/data_test.csv")
-        data = test.values
-        #result = model.predict(data)
-        rand = random.sample(range(1, train.values.shape[0]), 1000)
-        score = score + model.score(train.values[rand], output.values[rand])/nb_estim
-    print("Score pour %d neigbhbors: %f" % (nn, score))
+result = []
+i = 0
+for nn in range(3, 20):
+    for nnm in range(1, 20):
+        score = 0.0
+        for i in range(nb_estim):
+            rand = random.sample(range(1, train.values.shape[0]), int(train.values.shape[0]/2))
+            model = CollaborativeFiltering(preprocessing.scale(users.values[:, 1:]), preprocessing.scale(movies.values[:, 1:]), train.values[rand], output.values[rand], n_movie_neighbor=nnm, n_user_neighbor=nn)
+            #print(model.getUserMovies(0))
+            test = pd.read_csv("data/data_test.csv")
+            data = test.values
+            #result = model.predict(data)
+            rand = random.sample(range(1, train.values.shape[0]), 100)
+            score = score + model.score(train.values[rand], output.values[rand])/nb_estim
+        result[i] = score
+        i = i + 1
+        #print("Score pour %d neigbhbors user and neighbors movie %d: %f" % (nn, nnm, score))
+    print(result)
+    print(max(result))
 
 
 #make_submission(result, data[:, 0], data[:, 1], "data/results/collaborative")
