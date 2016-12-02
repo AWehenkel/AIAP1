@@ -181,12 +181,12 @@ if __name__ == "__main__":
 
     # Load data_test
     data_test = pd.read_csv('data/data_test.csv', delimiter=',')
-    aggregateData(data_test, user, movie)
+    #aggregateData(data_test, user, movie)
 
     # Load user info
     data_user = pd.read_csv('data/data_user.csv', delimiter=',')
     #userDataNormalize(data_user)
-
+    print(data_user.query('occupation == "other"').query('gender == "M"'))
     # Load movie info
     data_movie = pd.read_csv('data/data_movie.csv', delimiter=',', encoding="latin_1")
     #pd.read_cs
