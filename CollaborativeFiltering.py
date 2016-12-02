@@ -5,6 +5,7 @@ import pandas as pd
 import time
 import random
 from sklearn import preprocessing
+
 class CollaborativeFiltering:
     def __init__(self, user_data, movie_data, train_data, output_train, n_user_neighbor = 5, n_movie_neighbor = 5, nb_info_user = 10, nb_info_film = 10):
         self.train = train_data
@@ -85,7 +86,7 @@ for nn in range(5, 20):
     score = 0.0
     for i in range(nb_estim):
         rand = random.sample(range(1, train.values.shape[0]), int(train.values.shape[0]/2))
-        model = CollaborativeFiltering(users.values[:, 1:], movies.values[:, 1:], train.values[rand], output.values[rand], n_movie_neighbor=15, n_user_neighbor=15)
+        model = CollaborativeFiltering(preprocessing.scale(users.values[:, 1:]), preprocessing.scale(movies.values[:, 1:]), train.values[rand], output.values[rand], n_movie_neighbor=nn, n_user_neighbor=nn)
         #print(model.getUserMovies(0))
         test = pd.read_csv("data/data_test.csv")
         data = test.values
