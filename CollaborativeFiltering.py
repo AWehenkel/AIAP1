@@ -96,8 +96,7 @@ for nn in range(3, 20):
             #result = model.predict(data)
             rand = random.sample(range(1, train.values.shape[0]), 100)
             score = score + model.score(train.values[rand], output.values[rand])/nb_estim
-        result[i] = score
-        i = i + 1
+        result.append(score)
         #print("Score pour %d neigbhbors user and neighbors movie %d: %f" % (nn, nnm, score))
     print(result)
     print(max(result))
