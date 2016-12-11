@@ -19,9 +19,8 @@ class CollaborativeFiltering:
         self.n_user_neigbors = n_user_neighbor
         self.n_movie_neighbor = n_movie_neighbor
 
-        self.knn_user = NearestNeighbors(n_neighbors=n_user_neighbor, algorithm='ball_tree')
+        self.knn_user = NearestNeighbors(n_neighbors=n_user_neighbor)
         self.knn_user.fit(user_data)
-
 
     def getUserN(self, user):
         return self.knn_user.kneighbors(user)
@@ -51,7 +50,7 @@ class CollaborativeFiltering:
                     results = self.getUserMovies(n)
                     movies_user = np.append(movies_user, results[0])
                     movies_rating = np.append(movies_rating, results[1])
-                nn = knn.KNeighborsRegressor(n_neighbors=self.n_movie_neighbor)
+                nn = knn.KNeighborsRegressor(n_neighbors=min(self.n_movie_neighbor, len(movies_rating)), algorithm='brute', metric='cosine')
                 nn.fit(self.movies[movies_user.astype(int) - 1],movies_rating)
             prediction[i] = nn.predict([movie])
             if(i % 1000 == 0 and i > 10):
@@ -84,8 +83,8 @@ output = pd.read_csv("data/output_train.csv", delimiter=",")
 nb_estim = 10
 result = []
 i = 0
-for nn in range(3, 20):
-    for nnm in range(1, 20):
+for nn in range(10, 11):
+    for nnm in range(10, 11):
         score = 0.0
         for i in range(nb_estim):
             rand = random.sample(range(1, train.values.shape[0]), int(train.values.shape[0]/2))
@@ -94,12 +93,14 @@ for nn in range(3, 20):
             test = pd.read_csv("data/data_test.csv")
             data = test.values
             #result = model.predict(data)
-            rand = random.sample(range(1, train.values.shape[0]), 100)
+            rand = random.sample(range(1, train.values.shape[0]), 1000)
             score = score + model.score(train.values[rand], output.values[rand])/nb_estim
         result.append(score)
+        print(score)
         #print("Score pour %d neigbhbors user and neighbors movie %d: %f" % (nn, nnm, score))
-    print(result)
-    print(max(result))
+    print(min(result))
+print(result)
+print(min(result))
 
 
 #make_submission(result, data[:, 0], data[:, 1], "data/results/collaborative")

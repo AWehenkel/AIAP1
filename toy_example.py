@@ -63,7 +63,7 @@ def userDataNormalize(data):
         f.write('\n')
 
         for i in range(data_size):
-            line = '{:0.0f},{:0.0f},{:0.0f},{:0.0f}'.format(user_id[i], age[i], genders[i], zip_codes[i])
+            line = '{:0.0f},{:0.0f},{:0.0f}'.format(user_id[i], age[i], genders[i])
             for occupation in occupations:
                 if(occupation == data.iloc[i]["occupation"]):
                     line += ',{:0.0f}'.format(1)
@@ -123,19 +123,19 @@ def movieDataNormalizer(data):
                 word_in_title[movie_id][i] = 1
     print("ok")
     with open("movie_data_normalized" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
-        f.write('"MOVIE_ID","year","date_norm","movie_type_cast_int","movie_title_size"')
+        f.write('"MOVIE_ID","date_norm"')
         for movie_type in data.keys()[6:]:
             f.write(',"%s"' % movie_type)
-        for word in most_used_word:
-            f.write(',"%s"' % word)
+        #for word in most_used_word:
+         #   f.write(',"%s"' % word)
         f.write('\n')
 
         for i in range(data_size):
-            line = '{:0.0f},{:0.0f},{:0.3f},{:0.0f},{:0.0f}'.format(movie_id_available[i], year[i], date[i], movie_type_cast_int[i], movie_title_size[i])
+            line = '{:0.0f},{:0.3f}'.format(movie_id_available[i], date[i])
             for movie_type in data.keys()[6:]:
                 line += ',{:0.0f}'.format(data.iloc[i][movie_type])
-            for j in range(nb_word):
-                line += ',{:0.0f}'.format(word_in_title[i][j])
+           # for j in range(nb_word):
+            #    line += ',{:0.0f}'.format(word_in_title[i][j])
             line += '\n'
             f.write(line)
     #print(title)
@@ -173,32 +173,32 @@ if __name__ == "__main__":
 
 
     # Load data_train
-    data_train = pd.read_csv('data/data_train.csv', delimiter=',')
-    movie = pd.read_csv('movie_data_normalized.csv', delimiter=',')
-    user = pd.read_csv('user_data_normalized_28-11-2016_01h32.csv', delimiter=',')
+    #data_train = pd.read_csv('data/data_train.csv', delimiter=',')
     # Load output_train
-    output_train = pd.read_csv('data/output_train.csv', delimiter=',')
+    #output_train = pd.read_csv('data/output_train.csv', delimiter=',')
 
     # Load data_test
-    data_test = pd.read_csv('data/data_test.csv', delimiter=',')
-    #aggregateData(data_test, user, movie)
+    data_test = pd.read_csv('data/data_train.csv', delimiter=',')
+    movie = pd.read_csv('data/movie_data_normalized_08-12-2016_22h16.csv', delimiter=',')
+    user = pd.read_csv('data/user_data_normalized_07-12-2016_09h33.csv', delimiter=',')
+    aggregateData(data_test, user, movie)
 
     # Load user info
-    data_user = pd.read_csv('data/data_user.csv', delimiter=',')
+    #data_user = pd.read_csv('data/data_user.csv', delimiter=',')
     #userDataNormalize(data_user)
-    print(data_user.query('occupation == "other"').query('gender == "M"'))
+    #print(data_user.query('occupation == "other"').query('gender == "M"'))
     # Load movie info
-    data_movie = pd.read_csv('data/data_movie.csv', delimiter=',', encoding="latin_1")
+    #data_movie = pd.read_csv('data/data_movie.csv', delimiter=',', encoding="latin_1")
     #pd.read_cs
     #movieDataNormalizer(data_movie)
     # Create matrix "users x movies" for training data
 
-    n_users = len(np.unique(data_user['user_id']))
-    n_movies = len(np.unique(data_movie['movie_id']))
+    #n_users = len(np.unique(data_user['user_id']))
+    #n_movies = len(np.unique(data_movie['movie_id']))
 
-    matrix = np.zeros((n_users, n_movies))
+    #matrix = np.zeros((n_users, n_movies))
 
-    print("Building the matrix...")
+#    print("Building the matrix...")
     '''
     for i in range(data_train.shape[0]):
         user_idx = data_train.loc[i]['user_id']-1

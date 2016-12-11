@@ -10,6 +10,7 @@ import sklearn.neural_network as nn
 import sklearn.ensemble as ens
 import sklearn.decomposition as deco
 import sklearn.svm as svm
+import sklearn.naive_bayes as nb
 
 def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True):
     n_elements = len(y_predict)
@@ -100,10 +101,10 @@ class FeatureSelectionner:
         x = pd.read_csv(feature_path, delimiter=',').values
         y = pd.read_csv('data/output_train.csv', delimiter=',')["rating"].values
         print("Feature aglom:")
-        aglomerator = self.featureAglom(feature_path, 10)
+        aglomerator = self.featureAglom(feature_path, 5)
         x_aglom = aglomerator.transform(x)
         print("forest construction")
-        clf = ens.AdaBoostRegressor(n_estimators=1000, base_estimator=DecisionTreeRegressor(max_depth=3), loss='exponential')
+        clf = ens.AdaBoostRegressor(n_estimators=100, base_estimator=DecisionTreeRegressor(max_depth=3), loss='exponential')
         clf.fit(x_aglom,y)
         print(clf.score(x_aglom,y))
         nb_fold = 10
@@ -165,13 +166,20 @@ class FeatureSelectionner:
         clf.fit(features_train.values, result_train.values)
         return clf
 
+    def naiveBayes(self, feature_path):
+        features_train = pd.read_csv(feature_path, delimiter=',')
+        result_train = pd.read_csv('data/output_train.csv', delimiter=',')["rating"]
+        clf = nb.GaussianNB()
+        clf.fit(features_train, result_train)
+        print(cross_val_score(clf, features_train, result_train, cv=10, scoring='neg_mean_squared_error'))
+
 test = FeatureSelectionner()
 #algos = test.getImportanceFeatureByDecisionTree("agregated_data_28-11-2016_01h50.csv")
 #algos = test.makeKNNRegression("agregated_data_28-11-2016_01h50.csv")
-#algos = test.baggingKNNRegression("agregated_data_28-11-2016_01h50.csv")
+#algos = test.baggingKNNRegression("data/train_agregated_data_test_08-12-2016_22h26.csv")
 #algos = test.randomForest("agregated_data_28-11-2016_01h50.csv")
 #algos = test.makeMLP("agregated_data_28-11-2016_01h50.csv")
-#algos = test.adaboosTree("agregated_data_28-11-2016_01h50.csv")
+#algos = test.adaboosTree("data/train_agregated_data_test_08-12-2016_22h26.csv")
 #algos = test.SVR("agregated_data_28-11-2016_01h50.csv")
 #test_set = pd.read_csv('agregated_data_test_28-11-2016_11h11.csv', delimiter=',')
 #test_set_id = pd.read_csv('data/data_test.csv', delimiter=',')
@@ -180,7 +188,8 @@ test = FeatureSelectionner()
 #result = algos[0].predict(algos[1].transform(test_set.values))
 #make_submission(result, test_set_id["user_id"], test_set_id["movie_id"], "perfect")
 #test.featureAglom("agregated_data_28-11-2016_01h50.csv")
-x = pd.read_csv("agregated_data_28-11-2016_01h50.csv", delimiter=',')
+test.naiveBayes("data/train_agregated_data_test_08-12-2016_22h26.csv")
+#x = pd.read_csv("agregated_data_28-11-2016_01h50.csv", delimiter=',')
 '''
 for i in range(x.shape[0]):
     print(x.keys()[i])
@@ -192,10 +201,10 @@ for i in range(x.shape[0]):
         print(max((max(x.values[i][i+1:]), max(x.values[i][:i]))))
 '''
 t = 20
-clf = test.featureAglom("agregated_data_28-11-2016_01h50.csv", n_feature=t)
-clusters = clf.labels_
-for i in range(t):
-    print("Cluster %d:" % i)
-    for j in range(clf.labels_.shape[0]):
-        if clf.labels_[j] == i:
-            print("\t%s" % x.keys()[j])
+#clf = test.featureAglom("agregated_data_28-11-2016_01h50.csv", n_feature=t)
+#clusters = clf.labels_
+#for i in range(t):
+#    print("Cluster %d:" % i)
+ #   for j in range(clf.labels_.shape[0]):
+  #      if clf.labels_[j] == i:
+   #         print("\t%s" % x.keys()[j])
