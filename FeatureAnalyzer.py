@@ -1,3 +1,5 @@
+#See http://machinelearningmastery.com/feature-selection-machine-learning-python/ for more
+
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing
@@ -28,7 +30,7 @@ names = aggregated.keys()
 #aggregated = preprocessing.scale(aggregated.values)
 nb_feat = 6
 test = 5
-all = 0
+all = 1
 
 if all == 1 or test==1:
     # Filter method
