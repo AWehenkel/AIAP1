@@ -25,6 +25,35 @@ def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True
             f.write(line)
     print("Submission file successfully written!")
 
+def getSuppValues():
+    train = pd.read_csv("data/data_train.csv", delimiter=",")
+    train_values = pd.read_csv("data/output_train.csv", delimiter=",")
+    train = np.append(train, train_values, axis=1)
+    users = pd.read_csv("data/user_data_normalized_28-11-2016_01h32.csv", delimiter=",")
+    movies = pd.read_csv("data/movie_data_normalized.csv", delimiter=",")
+    print(users.shape[0])
+    users_offset = np.zeros(users.shape[0])
+    users_nb_movie = np.zeros(users.shape[0])
+    movies_avg = np.zeros(movies.shape[0])
+    movies_nb_user = np.zeros(movies.shape[0])
+    rating_matrix = np.zeros((users.shape[0], movies.shape[0]))
+    #Création des matrice offset et mean
+    for el in train[:]:
+        users_nb_movie[el[0] - 1] = users_nb_movie[el[0] - 1] + 1
+        users_offset[el[0] - 1] = users_offset[el[0] - 1] + el[2]
+        movies_nb_user[el[1] - 1] = movies_nb_user[el[1] - 1] + 1
+        movies_avg[el[1] - 1] = movies_avg[el[1] - 1] + el[2]
+
+    k_movie = 20
+    global_avg_movie = movies_avg.sum()/movies_nb_user.sum()
+
+    k_user = 20
+    global_avg_user = users_offset.sum()/users_nb_movie.sum()
+    movies_avg = np.divide((movies_avg + k_movie*global_avg_movie), (movies_nb_user + k_movie))
+
+    users_offset = np.divide((users_offset + k_user*global_avg_user), (k_user + users_nb_movie)) - movies_avg.mean()
+    return(users_offset, movies_avg)
+
 def userDataNormalize(data):
     data_size = data.shape[0]
     user_id = np.zeros(data_size)
@@ -34,7 +63,8 @@ def userDataNormalize(data):
     occupations = []
     zip_codes = np.zeros(data_size)
     len_code = 2
-
+    supp_data = getSuppValues()
+    user = supp_data[0]
     for i in range(data_size):
         user_id[i] = int(data.iloc[i]["user_id"])
         #Divide the age by a bigger number if we want fewer age categories
@@ -57,13 +87,13 @@ def userDataNormalize(data):
             zip_codes[i] = 0 #Je ne sais pas trop quoi faire des zip_code qui contiennent des lettres ...
 
     with open("user_data_normalized" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
-        f.write('"user_id","age","gender","zip_code"')
+        f.write('"user_id","age","gender","offset"')
         for occupation in occupations:
             f.write(',"%s"' % occupation)
         f.write('\n')
 
         for i in range(data_size):
-            line = '{:0.0f},{:0.0f},{:0.0f}'.format(user_id[i], age[i], genders[i])
+            line = '{:0.0f},{:0.0f},{:0.0f},{:0.3f}'.format(user_id[i], age[i], genders[i], user[i])
             for occupation in occupations:
                 if(occupation == data.iloc[i]["occupation"]):
                     line += ',{:0.0f}'.format(1)
@@ -81,6 +111,8 @@ def movieDataNormalizer(data):
     movie_title_size = np.zeros(data_size)
     words = {}
     nb_word = 20
+    supp_data = getSuppValues()
+    movie = supp_data[1]
     most_used_word = ["" for i in range(nb_word)]
     most_used_word_number = [0 for i in range(nb_word)]
 
@@ -123,7 +155,7 @@ def movieDataNormalizer(data):
                 word_in_title[movie_id][i] = 1
     print("ok")
     with open("movie_data_normalized" + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M')) + ".csv", 'w') as f:
-        f.write('"MOVIE_ID","date_norm"')
+        f.write('"MOVIE_ID","date_norm","avg_rating"')
         for movie_type in data.keys()[6:]:
             f.write(',"%s"' % movie_type)
         #for word in most_used_word:
@@ -131,7 +163,7 @@ def movieDataNormalizer(data):
         f.write('\n')
 
         for i in range(data_size):
-            line = '{:0.0f},{:0.3f}'.format(movie_id_available[i], date[i])
+            line = '{:0.0f},{:0.3f},{:0.3f}'.format(movie_id_available[i], date[i], movie[i])
             for movie_type in data.keys()[6:]:
                 line += ',{:0.0f}'.format(data.iloc[i][movie_type])
            # for j in range(nb_word):
@@ -158,14 +190,14 @@ def aggregateData(data, user, movie):
 
             user_id = data.iloc[i]["user_id"]
             for el in user.iloc[user_id - 1][1:]:
-                line += '{:0.0f},'.format(el)
+                line += '%s,' % el
 
             print(i)
             movie_id = data.loc[i]["movie_id"]
             for el in movie.iloc[movie_id - 1][1:-1]:
-                line += '{:0.0f},'.format(el)
+                line += '%s,' % el
 
-            line += '{:0.0f}\n'.format(movie.loc[movie_id - 1][-1])
+            line += '%s\n' % (movie.loc[movie_id - 1][-1])
             f.write(line)
 
 
@@ -178,9 +210,9 @@ if __name__ == "__main__":
     #output_train = pd.read_csv('data/output_train.csv', delimiter=',')
 
     # Load data_test
-    data_test = pd.read_csv('data/data_train.csv', delimiter=',')
-    movie = pd.read_csv('data/movie_data_normalized_08-12-2016_22h16.csv', delimiter=',')
-    user = pd.read_csv('data/user_data_normalized_07-12-2016_09h33.csv', delimiter=',')
+    data_test = pd.read_csv('data/data_test.csv', delimiter=',')
+    movie = pd.read_csv('data/movie_data_normalized_11-12-2016_15h33.csv', delimiter=',')
+    user = pd.read_csv('data/user_data_normalized_11-12-2016_15h30.csv', delimiter=',')
     aggregateData(data_test, user, movie)
 
     # Load user info
