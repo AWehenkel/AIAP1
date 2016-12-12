@@ -2,25 +2,6 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cosine
 import time
-
-def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True):
-    n_elements = len(y_predict)
-
-    if name is None:
-      name = 'submission'
-    if date:
-      name = name + '_{}'.format(time.strftime('%d-%m-%Y_%Hh%M'))
-
-    with open(name + ".csv", 'w') as f:
-        f.write('"USER_ID_MOVIE_ID","PREDICTED_RATING"\n')
-        for i in range(n_elements):
-            if np.isnan(y_predict[i]):
-                raise ValueError('NaN detected!')
-            line = '{:0.0f}_{:0.0f},{}\n'.format(user_id_test[i],movie_id_test[i],y_predict[i])
-            f.write(line)
-    print("Submission file successfully written!")
-
-
 train = pd.read_csv("data/data_train.csv", delimiter=",")
 train_values = pd.read_csv("data/output_train.csv", delimiter=",")
 train = np.append(train, train_values, axis=1)
@@ -115,10 +96,3 @@ for user in range(users.shape[0]):
             genre_avg = np.mean(movies_genre_avg)
 
         rating_matrix[user, movie] = (work_avg + genre_avg)/2
-
-test = pd.read_csv("data/data_test.csv", delimiter=",").values
-y = []
-for el in test:
-    y.append(rating_matrix[el[0] - 1, el[1] - 1])
-
-make_submission(y, test[:, 0], test[:, 1])

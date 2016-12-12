@@ -48,6 +48,15 @@ def getSuppValues():
     users_offset = np.divide((users_offset + k_user*global_avg_user), (k_user + users_nb_movie)) - movies_avg.mean()
     return(users_offset, movies_avg)
 
+def getAvgRating():
+    train = pd.read_csv("data/data_train.csv", delimiter=",")
+    train_values = pd.read_csv("data/output_train.csv", delimiter=",")
+    train = np.append(train, train_values, axis=1)
+    users = pd.read_csv("data/user_data_normalized_28-11-2016_01h32.csv", delimiter=",")
+    movies = pd.read_csv("data/movie_data_normalized.csv", delimiter=",")
+    ['unknown', 'Action', 'Adventure', 'Animation', 'Children', 'Comedy', 'Crime', 'Film-Noir',
+     'Horror', 'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western', 'Documentary', 'Drama',
+     'Fantasy']
 
 
 

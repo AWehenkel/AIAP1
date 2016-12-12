@@ -79,9 +79,9 @@ class CollaborativeRegressor:
         return {'movie_data': self.movies, 'user_data' : self.users, 'nb_neighbors_user' : self.nb_users, 'nb_neighbors_movie' : self.nb_movies}
 
 
-users = pd.read_csv("data/user_data_normalized_07-12-2016_09h33.csv", delimiter=",")
+users = pd.read_csv("user_svd_features_11-12-2016_17h36.csv", delimiter=",")
 users = users.values[:, 1:]
-movies = pd.read_csv("data/movie_data_normalized_08-12-2016_22h16.csv", delimiter=",")
+movies = pd.read_csv("movie_svd_features_11-12-2016_17h36.csv", delimiter=",")
 movies = movies.values[:, 1:]
 train = pd.read_csv("data/data_train.csv", delimiter=",")
 output = pd.read_csv("data/output_train.csv", delimiter=",")
