@@ -19,19 +19,19 @@ def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True
             line = '{:0.0f}_{:0.0f},{}\n'.format(user_id_test[i],movie_id_test[i],y_predict[i])
             f.write(line)
     print("Submission file successfully written!")
+
 def getSuppValues():
     train = pd.read_csv("data/data_train.csv", delimiter=",")
     train_values = pd.read_csv("data/output_train.csv", delimiter=",")
     train = np.append(train, train_values, axis=1)
     users = pd.read_csv("data/user_data_normalized_28-11-2016_01h32.csv", delimiter=",")
     movies = pd.read_csv("data/movie_data_normalized.csv", delimiter=",")
-    print(users.shape[0])
     users_offset = np.zeros(users.shape[0])
     users_nb_movie = np.zeros(users.shape[0])
     movies_avg = np.zeros(movies.shape[0])
     movies_nb_user = np.zeros(movies.shape[0])
     rating_matrix = np.zeros((users.shape[0], movies.shape[0]))
-    #Création des matrice offset et mean
+    #Creation des matrice offset et mean
     for el in train[:]:
         users_nb_movie[el[0] - 1] = users_nb_movie[el[0] - 1] + 1
         users_offset[el[0] - 1] = users_offset[el[0] - 1] + el[2]
