@@ -79,16 +79,16 @@ class CollaborativeRegressor:
         return {'movie_data': self.movies, 'user_data' : self.users, 'nb_neighbors_user' : self.nb_users, 'nb_neighbors_movie' : self.nb_movies}
 
 
-users = pd.read_csv("user_svd_features_11-12-2016_17h36.csv", delimiter=",")
+users = pd.read_csv("user_svd_features_13-12-2016_03h52.csv", delimiter=",")
 users = users.values[:, 1:]
-movies = pd.read_csv("movie_svd_features_11-12-2016_17h36.csv", delimiter=",")
+movies = pd.read_csv("movie_svd_features_13-12-2016_03h52.csv", delimiter=",")
 movies = movies.values[:, 1:]
 train = pd.read_csv("data/data_train.csv", delimiter=",")
 output = pd.read_csv("data/output_train.csv", delimiter=",")
 t_o = np.append(train, output, axis=1)
 np.random.shuffle(t_o)
-t = CollaborativeRegressor(preprocessing.scale(movies), preprocessing.scale(users), 20, 40)
-score = cross_val_score(t, t_o[:, :2], t_o[:, 2:], cv=10).mean()
+t = CollaborativeRegressor(preprocessing.scale(movies), preprocessing.scale(users), 5, 50)
+score = cross_val_score(t, t_o[:, :2], t_o[:, 2:], cv=10, verbose=10).mean()
 print("Validation score %f" % score)
 best_score = 10
 best_user_n = 0
