@@ -57,11 +57,12 @@ print("Average score: %f" % np.mean(scores))
 #np.random.shuffle(t_o)
 x = t_o[:, :-1]
 y = t_o[:, -1]
-bag1 = ens.RandomForestRegressor(n_estimators=1000, max_depth=50, n_jobs=8, verbose=True)
+bag1 = ens.RandomForestRegressor(n_estimators=500, max_depth=50, n_jobs=8, verbose=True)
 #bag1 = ens.AdaBoostRegressor(n_estimators=100, base_estimator=DecisionTreeRegressor(max_depth=15), loss='square')
-#bag1 = ens.ExtraTreesRegressor(n_estimators=1000, max_depth=45, n_jobs=8, max_features="log2")
+#bag1 = ens.ExtraTreesRegressor(n_estimators=500, max_depth=45, n_jobs=8, max_features="log2")
 #bag1.fit(x, y)
 nb_fold = 10
+print(x.shape)
 print(np.mean(cross_val_score(bag1, x, y, cv=nb_fold, scoring='neg_mean_squared_error', verbose=10)))
 print("ok")
 
