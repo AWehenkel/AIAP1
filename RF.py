@@ -25,7 +25,7 @@ def make_submission(y_predict, user_id_test, movie_id_test, name=None, date=True
     print("Submission file successfully written!")
 util.check_random_state(1)
 
-features = pd.read_csv('aggregated_svd_features_train_13-12-2016_03h51.csv', delimiter=',')
+features = pd.read_csv('aggregated_svd_features_train_16-12-2016_01h58.csv', delimiter=',')
 features1 = pd.read_csv('agregated_data_train_11-12-2016_15h39.csv', delimiter=',')
 #features = pd.read_csv('aggregated_svd_features_train_11-12-2016_17h36.csv', delimiter=',')
 output = pd.read_csv('data/output_train.csv', delimiter=',')
@@ -57,19 +57,19 @@ print("Average score: %f" % np.mean(scores))
 np.random.shuffle(t_o)
 x = t_o[:, :-1]
 y = t_o[:, -1]
-bag1 = ens.RandomForestRegressor(n_estimators=1000, max_depth=50, n_jobs=8, verbose=True, max_features="log2")
+#bag1 = ens.RandomForestRegressor(n_estimators=50, max_depth=10, n_jobs=8, verbose=True)
 #bag1 = ens.AdaBoostRegressor(n_estimators=100, base_estimator=DecisionTreeRegressor(max_depth=15), loss='square')
-#bag1 = ens.ExtraTreesRegressor(n_estimators=1000, max_depth=45, n_jobs=8, max_features="log2")
+bag1 = ens.ExtraTreesRegressor(n_estimators=1000, max_depth=45, n_jobs=8, max_features="log2")
 #bag1.fit(x, y)
 nb_fold = 10
-#print(np.mean(cross_val_score(bag1, x, y, cv=nb_fold, scoring='neg_mean_squared_error', verbose=10)))
+print(np.mean(cross_val_score(bag1, x, y, cv=nb_fold, scoring='neg_mean_squared_error', verbose=10)))
 print("ok")
 
-bag1.fit(x, y)
-to_predict_feature = pd.read_csv("aggregated_svd_features_test_11-12-2016_17h36.csv",  delimiter=',').values
-to_predict_feature1 = pd.read_csv("agregated_data_test_11-12-2016_15h58.csv",  delimiter=',').values
-to_predict_feature = pd.read_csv("aggregated_svd_features_test_13-12-2016_03h51.csv")
-to_predict_feature = np.append(to_predict_feature1, to_predict_feature, axis=1)
-test = pd.read_csv("data/data_test.csv",  delimiter=',').values
-predicted = bag1.predict(to_predict_feature)
-make_submission(predicted, test[:, 0], test[:, 1], name="svd_adaboost_300")
+#bag1.fit(x, y)
+#to_predict_feature = pd.read_csv("aggregated_svd_features_test_11-12-2016_17h36.csv",  delimiter=',').values
+#to_predict_feature1 = pd.read_csv("agregated_data_test_11-12-2016_15h58.csv",  delimiter=',').values
+#to_predict_feature = pd.read_csv("aggregated_svd_features_test_13-12-2016_03h51.csv")
+#to_predict_feature = np.append(to_predict_feature1, to_predict_feature, axis=1)
+#test = pd.read_csv("data/data_test.csv",  delimiter=',').values
+#predicted = bag1.predict(to_predict_feature)
+#make_submission(predicted, test[:, 0], test[:, 1], name="svd_adaboost_300")

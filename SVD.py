@@ -58,12 +58,17 @@ row = train[:, 0] - 1
 col = train[:, 1] - 1
 data = train[:, 2]
 known_rating = sparse.csr_matrix((data, (row, col)), shape=(users.shape[0], movies.shape[0]))
+print(known_rating.toarray())
 num_components = 40 # number of components
-SVD = TruncatedSVD(n_components=num_components,n_iter=10)
+SVD = TruncatedSVD(n_components=num_components,n_iter=100)
 user_feature = SVD.fit_transform(known_rating)
-print(user_feature.shape)
 Sigma = SVD.explained_variance_ratio_
 movie_feature = np.transpose(SVD.components_)
+print(user_feature.shape)
+print(Sigma.shape)
+print(user_feature.shape)
+print(np.sum(np.multiply(user_feature[0], movie_feature[9])))
+print(np.dot(SVD.fit_transform(known_rating),SVD.components_))
 sup_info = CollaborativeFiltering2.getSuppValues()
 #make_submission(y, )
 '''
